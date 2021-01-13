@@ -21,14 +21,16 @@ form_class = uic.loadUiType(resource_path("file_path_finder.ui"))[0]
 print(form_class)
 
 
-class WindowClass(QtWidgets.QMainWindow, form_class) :
+class WindowClass(QtWidgets.QMainWindow, form_class):
+
+    global cursor
+    global conn
+    global read_file_name
+    global write_file_name
 
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
-
-        global cursor
-        global conn
 
         # Load and connect OBDC
         conn_String = r'DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};' \
@@ -68,6 +70,8 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
     def exit_app(self, conn, cursor):
 
         print("Shortcut pressed") #verification of shortcut press
+        cursor.close()
+        conn.close()
         self.close()
 
     def execution_proc(self):
@@ -90,8 +94,6 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
 
     def save_file(self):
 
-        global write_file_name
-
         write_file_name = QtWidgets.QFileDialog.getOpenFileName(self, "파일 저장","","*.xlsm")[0]
 
         if write_file_name is not None:
@@ -99,10 +101,8 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
 
     def open_file(self):
 
-        global read_file_name
-
         # Find file
-        read_file_name = QtWidgets.QFileDialog.getOpenFileName(self, "파일 열기 . . .","","*.xlsx")[0]
+        read_file_name = QtWidgets.QFileDialog.getOpenFileName(self, "파일 열기 . . .", "", "*.xlsx")[0]
 
         if read_file_name is not None:
             # Set combobox
@@ -112,7 +112,8 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
             self.sht_name_list.addItems(sht_list)
             tempBk.close()
 
-if __name__ == "__main__" :
+
+if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     myWindow = WindowClass()
