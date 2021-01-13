@@ -3,7 +3,7 @@ import os
 import openpyxl
 import pyodbc
 import btm_up_by_exl
-from PyQt5 import uic, QtWidgets
+from PyQt5 import uic, QtWidgets, QtGui
 
 
 def resource_path(relative_path):
@@ -28,6 +28,7 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
         self.setupUi(self)
 
         global cursor
+        global conn
 
         # Load and connect OBDC
         conn_String = r'DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};' \
@@ -42,6 +43,9 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
         volume_list = list(cursor.fetchall())
         # print(volume_list)
 
+        self.exit=QtWidgets.QAction("Exit Application",shortcut=QtGui.QKeySequence("Ctrl+q"),triggered=lambda:self.exit_app(conn,cursor))
+        self.addAction(self.exit)
+
         for row in volume_list:
             self.volume_ver.addItem(str(row[0]))
 
@@ -53,6 +57,18 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
         self.exe_btn.clicked.connect(self.execution_proc)
         self.volume_ver.currentIndexChanged.connect(lambda : self.on_change_vol(volume_list))
         #self.btn_2.clicked.connect(self.button2Function)
+
+    def closeEvent(self, event):
+
+        print ("User has clicked the red x on the main window")
+        cursor.close()
+        conn.close()
+        event.accept()
+
+    def exit_app(self, conn, cursor):
+
+        print("Shortcut pressed") #verification of shortcut press
+        self.close()
 
     def execution_proc(self):
 
@@ -95,6 +111,7 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
             tempBk.close()
 
 if __name__ == "__main__" :
+
     app = QtWidgets.QApplication(sys.argv)
     myWindow = WindowClass()
     myWindow.show()
