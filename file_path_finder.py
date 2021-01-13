@@ -93,7 +93,9 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
         global write_file_name
 
         write_file_name = QtWidgets.QFileDialog.getOpenFileName(self, "파일 저장","","*.xlsm")[0]
-        self.save_path_find_tBox.setText(write_file_name)
+
+        if write_file_name is not None:
+            self.save_path_find_tBox.setText(write_file_name)
 
     def open_file(self):
 
@@ -101,10 +103,10 @@ class WindowClass(QtWidgets.QMainWindow, form_class) :
 
         # Find file
         read_file_name = QtWidgets.QFileDialog.getOpenFileName(self, "파일 열기 . . .","","*.xlsx")[0]
-        self.file_path_find_tBox.setText(read_file_name)
 
         if read_file_name is not None:
             # Set combobox
+            self.file_path_find_tBox.setText(read_file_name)
             tempBk = openpyxl.load_workbook(read_file_name, data_only=True)
             sht_list = tempBk.sheetnames
             self.sht_name_list.addItems(sht_list)
